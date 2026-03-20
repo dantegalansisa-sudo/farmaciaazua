@@ -117,6 +117,32 @@ export default function ContactSection() {
             </button>
           </motion.form>
         </div>
+
+        {/* Mapa */}
+        <motion.div
+          className="contact-map"
+          initial={{ y: 30, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <div className="contact-map__header">
+            <MapPin size={18} />
+            <span>Av. 27 de Febrero No. 34, Centro de la Ciudad, Azua</span>
+          </div>
+          <div className="contact-map__frame">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3772.5!2d-70.7289!3d18.4533!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ea562c2f4555555%3A0x1234567890abcdef!2sAv.%2027%20de%20Febrero%2C%20Azua%20De%20Compostela!5e0!3m2!1ses!2sdo!4v1700000000000!5m2!1ses!2sdo"
+              width="100%"
+              height="400"
+              style={{ border: 0, borderRadius: '16px' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicacion Farmacia Dilania — Azua"
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   );

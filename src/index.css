@@ -1453,6 +1453,37 @@ ul, ol {
   box-shadow: 0 16px 40px rgba(26,115,64,0.35);
 }
 
+/* Map */
+.contact-map {
+  margin-top: 64px;
+}
+
+.contact-map__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.contact-map__header svg {
+  color: var(--green);
+}
+
+.contact-map__frame {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+.contact-map__frame iframe {
+  display: block;
+}
+
 /* ============ FOOTER ============ */
 .footer {
   background: var(--bg-dark);
