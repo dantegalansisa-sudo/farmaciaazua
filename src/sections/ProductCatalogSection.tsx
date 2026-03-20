@@ -4,7 +4,6 @@ import { Pill, Sparkles, Paintbrush, Baby, Stethoscope, Cross, LayoutGrid } from
 import type { ReactNode } from 'react';
 import RevealText from '../components/RevealText';
 import ProductCard from '../components/ProductCard';
-import ProductDetailModal from '../components/ProductDetailModal';
 import { products } from '../data/products';
 import type { Product, CategorySlug } from '../data/types';
 
@@ -20,9 +19,12 @@ const filters: { key: FilterKey; label: string; icon: ReactNode }[] = [
   { key: 'primeros-auxilios', label: 'Primeros Auxilios', icon: <Cross size={16} /> },
 ];
 
-export default function ProductCatalogSection() {
+interface Props {
+  onViewDetail?: (product: Product) => void;
+}
+
+export default function ProductCatalogSection({ onViewDetail }: Props) {
   const [activeFilter, setActiveFilter] = useState<FilterKey>('todos');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -40,7 +42,6 @@ export default function ProductCatalogSection() {
           Nuestros Productos
         </RevealText>
 
-        {/* Filter Tabs */}
         <div className="catalog-filters">
           {filters.map((f) => (
             <button
@@ -58,7 +59,6 @@ export default function ProductCatalogSection() {
           <span>{filtered.length} producto{filtered.length !== 1 ? 's' : ''}</span>
         </motion.div>
 
-        {/* Product Grid */}
         <motion.div className="catalog-grid" layout>
           <AnimatePresence mode="popLayout">
             {filtered.map((product, i) => (
@@ -66,17 +66,12 @@ export default function ProductCatalogSection() {
                 key={product.id}
                 product={product}
                 index={i}
-                onViewDetail={setSelectedProduct}
+                onViewDetail={onViewDetail}
               />
             ))}
           </AnimatePresence>
         </motion.div>
       </div>
-
-      <ProductDetailModal
-        product={selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
     </section>
   );
 }

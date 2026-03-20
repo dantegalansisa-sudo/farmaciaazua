@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { ShoppingCart, Check, AlertCircle, Eye, FileText } from 'lucide-react';
+import { ShoppingCart, Check, AlertCircle, Eye, FileText, Heart, Share2, AlertTriangle } from 'lucide-react';
 import type { Product } from '../data/types';
 import { useCart } from '../contexts/CartContext';
+import { useWishlist } from '../contexts/WishlistContext';
 
 interface ProductCardProps {
   product: Product;
@@ -9,8 +10,19 @@ interface ProductCardProps {
   onViewDetail?: (product: Product) => void;
 }
 
+function getStockUrgency(product: Product): string | null {
+  if (!product.inStock) return null;
+  const hash = product.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  if (hash % 5 === 0) return 'Solo quedan 3!';
+  if (hash % 7 === 0) return 'Ultimas unidades';
+  return null;
+}
+
 export default function ProductCard({ product, index, onViewDetail }: ProductCardProps) {
   const { addItem, setIsOpen } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const wishlisted = isInWishlist(product.id);
+  const urgency = getStockUrgency(product);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -18,6 +30,13 @@ export default function ProductCard({ product, index, onViewDetail }: ProductCar
       addItem(product);
       setIsOpen(true);
     }
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const text = `Mira este producto en Farmacia Dilania: ${product.name} - ${product.priceRange}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank');
   };
 
   return (
@@ -38,11 +57,39 @@ export default function ProductCard({ product, index, onViewDetail }: ProductCar
         <span className={`product-card__stock ${product.inStock ? '' : 'product-card__stock--out'}`}>
           {product.inStock ? <><Check size={11} /> Disponible</> : <><AlertCircle size={11} /> Agotado</>}
         </span>
-        <button className="product-card__view" onClick={(e) => { e.stopPropagation(); onViewDetail?.(product); }}>
-          <Eye size={16} />
-        </button>
+
+        <div className="product-card__actions">
+          <button
+            className={`product-card__action-btn ${wishlisted ? 'product-card__action-btn--active' : ''}`}
+            onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
+            aria-label="Favorito"
+          >
+            <Heart size={16} fill={wishlisted ? 'currentColor' : 'none'} />
+          </button>
+          <button
+            className="product-card__action-btn"
+            onClick={(e) => { e.stopPropagation(); onViewDetail?.(product); }}
+            aria-label="Ver detalle"
+          >
+            <Eye size={16} />
+          </button>
+          <button
+            className="product-card__action-btn"
+            onClick={handleShare}
+            aria-label="Compartir"
+          >
+            <Share2 size={16} />
+          </button>
+        </div>
       </div>
+
       <div className="product-card__body">
+        {urgency && (
+          <span className="product-card__urgency">
+            <AlertTriangle size={11} />
+            {urgency}
+          </span>
+        )}
         <h3 className="product-card__name">{product.name}</h3>
         <span className="product-card__price">{product.priceRange}</span>
         {product.manufacturer && (

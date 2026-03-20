@@ -1,9 +1,10 @@
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingCart, AlertTriangle, Check, FileText, Info, Package } from 'lucide-react';
+import { X, ShoppingCart, AlertTriangle, Check, FileText, Info, Package, Heart, Share2 } from 'lucide-react';
 import type { Product } from '../data/types';
 import { useClickOutside } from '../hooks/useClickOutside';
 import { useCart } from '../contexts/CartContext';
+import { useWishlist } from '../contexts/WishlistContext';
 
 interface Props {
   product: Product | null;
@@ -13,6 +14,7 @@ interface Props {
 export default function ProductDetailModal({ product, onClose }: Props) {
   const modalRef = useRef<HTMLDivElement>(null);
   const { addItem, setIsOpen: openCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   useClickOutside(modalRef, onClose);
 
@@ -22,6 +24,12 @@ export default function ProductDetailModal({ product, onClose }: Props) {
       onClose();
       openCart(true);
     }
+  };
+
+  const handleShare = () => {
+    if (!product) return;
+    const text = `Mira este producto en Farmacia Dilania: ${product.name} - ${product.priceRange}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
@@ -119,14 +127,30 @@ export default function ProductDetailModal({ product, onClose }: Props) {
                     </div>
                   )}
 
-                  <button
-                    className="product-modal__add-btn"
-                    onClick={handleAddToCart}
-                    disabled={!product.inStock}
-                  >
-                    <ShoppingCart size={18} />
-                    {product.inStock ? 'Agregar al Carrito' : 'No Disponible'}
-                  </button>
+                  <div className="product-modal__button-row">
+                    <button
+                      className="product-modal__add-btn"
+                      onClick={handleAddToCart}
+                      disabled={!product.inStock}
+                    >
+                      <ShoppingCart size={18} />
+                      {product.inStock ? 'Agregar al Carrito' : 'No Disponible'}
+                    </button>
+                    <button
+                      className={`product-modal__icon-btn ${isInWishlist(product.id) ? 'product-modal__icon-btn--active' : ''}`}
+                      onClick={() => toggleWishlist(product.id)}
+                      aria-label="Favorito"
+                    >
+                      <Heart size={18} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} />
+                    </button>
+                    <button
+                      className="product-modal__icon-btn"
+                      onClick={handleShare}
+                      aria-label="Compartir"
+                    >
+                      <Share2 size={18} />
+                    </button>
+                  </div>
 
                   <p className="product-modal__disclaimer">
                     Este producto no pretende diagnosticar, tratar, curar o prevenir ninguna enfermedad. Consulte a su medico.
